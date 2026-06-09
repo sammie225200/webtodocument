@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+python-multipart
+python-dotenv
+pydantic
+pydantic-settings
+requests
+pypdf
+mistralai
+python-jose[cryptography]
+supabase
+pip install pydantic-settings
