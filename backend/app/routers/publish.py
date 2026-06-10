@@ -1,48 +1,45 @@
-import shutil
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
-from pathlib import Path
-
-from fastapi import (
-    APIRouter,
-    HTTPException
-)
+from app.database import get_db
+from app.auth import get_current_user
+from app.models import Site
 
 router = APIRouter(
+    prefix="/api/publish",
     tags=["Publish"]
 )
 
-GENERATED_DIR = Path("generated")
-PUBLISHED_DIR = Path("published")
 
-PUBLISHED_DIR.mkdir(
-    exist_ok=True
-)
+@router.get("/")
+def publish_status():
+    return {
+        "status": "ok",
+        "message": "Publish router working"
+    }
 
 
-@router.post("/publish/{file_id}")
-def publish(
-    file_id: str
+@router.post("/{site_id}")
+def publish_site(
+    site_id: int,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
+    site = db.query(Site).filter(
+        Site.id == site_id
+    ).first()
 
-    source = GENERATED_DIR / f"{file_id}.html"
-
-    if not source.exists():
+    if not site:
         raise HTTPException(
-            404,
-            "File not found"
+            status_code=404,
+            detail="Site not found"
         )
 
-    destination = (
-        PUBLISHED_DIR /
-        f"{file_id}.html"
-    )
-
-    shutil.copy(
-        source,
-        destination
-    )
+    site.status = "published"
+    db.commit()
 
     return {
         "success": True,
-        "url": f"/published/{file_id}.html"
+        "site_id": site.id,
+        "status": site.status
     }
