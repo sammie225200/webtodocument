@@ -11,4 +11,8 @@ pypdf
 mistralai
 python-jose[cryptography]
 supabase
-pip install pydantic-settings
+passlib[bcrypt]
+bcrypt
+email-validator
+python-dateutil
+httpx
