@@ -29,7 +29,11 @@ app = FastAPI(
     title="Document To Website API",
     version="1.0.0"
 )
+app = FastAPI()
 
+@app.get("/")
+def root():
+    return {"status": "ok"}
 # CORS
 app.add_middleware(
     CORSMiddleware,
